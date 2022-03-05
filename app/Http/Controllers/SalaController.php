@@ -7,79 +7,52 @@ use Illuminate\Http\Request;
 
 class SalaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
+    public function index(){
+        $salas = Sala::orderby('title', 'DESC')->paginate(1);
+        return view('admin.salas.index', compact('salas'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+    public function create(){
+        return view('admin.salas.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+    public function store(Request $request){
+        $sala = Sala::create($request->all());
+        return redirect()->route('salas.index');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Sala  $sala
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Sala $sala)
-    {
-        //
+    public function show($id){
+        $sala = Sala::find($id);
+        if(!$sala){
+            return redirect()->route('salas.index');
+        }
+        return view('admin.salas.show', compact('sala'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Sala  $sala
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Sala $sala)
-    {
-        //
+    public function destroy($id){
+        $sala = Sala::find($id);
+        $sala->delete();
+        return redirect()->route('salas.index');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Sala  $sala
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Sala $sala)
-    {
-        //
+    public function edit($id){
+        $sala = Sala::find($id);
+        if(!$sala){
+            return redirect()->route('salas.index');
+        }
+        return view('admin.salas.edit', compact('sala'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Sala  $sala
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Sala $sala)
-    {
-        //
+    public function update(Request $request, $id){
+        $sala = Sala::find($id);
+        if(!$sala){
+            return redirect()->back();
+        }
+        $sala->update($request->all());
+        return redirect()
+            ->route('salas.index')
+            ->with('message', 'Alterado com sucesso')
+        ;
     }
+
 }

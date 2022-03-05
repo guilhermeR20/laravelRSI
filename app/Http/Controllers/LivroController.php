@@ -7,79 +7,52 @@ use Illuminate\Http\Request;
 
 class LivroController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
+    public function index(){
+        $livros = Livro::orderby('title', 'DESC')->paginate(1);
+        return view('livros.index', compact('livros'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+    public function create(){
+        return view('livros.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+    public function store(Request $request){
+        $livro = Livro::create($request->all());
+        return redirect()->route('livros.index');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Livro  $livro
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Livro $livro)
-    {
-        //
+    public function show($id){
+        $livro = Livro::find($id);
+        if(!$livro){
+            return redirect()->route('livros.index');
+        }
+        return view('livros.show', compact('livro'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Livro  $livro
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Livro $livro)
-    {
-        //
+    public function destroy($id){
+        $livro = Livro::find($id);
+        $livro->delete();
+        return redirect()->route('livros.index');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Livro  $livro
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Livro $livro)
-    {
-        //
+    public function edit($id){
+        $livro = Livro::find($id);
+        if(!$livro){
+            return redirect()->route('livros.index');
+        }
+        return view('livros.edit', compact('livro'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Livro  $livro
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Livro $livro)
-    {
-        //
+    public function update(Request $request, $id){
+        $livro = Livro::find($id);
+        if(!$livro){
+            return redirect()->back();
+        }
+        $livro->update($request->all());
+        return redirect()
+            ->route('livros.index')
+            ->with('message', 'Alterado com sucesso')
+        ;
     }
+
 }

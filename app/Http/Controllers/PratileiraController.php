@@ -7,79 +7,52 @@ use Illuminate\Http\Request;
 
 class PratileiraController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
+    public function index(){
+        $pratileiras = Pratileira::orderby('title', 'DESC')->paginate(1);
+        return view('admin.pratileiras.index', compact('pratileiras'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+    public function create(){
+        return view('admin.pratileiras.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+    public function store(Request $request){
+        $pratileira = Pratileira::create($request->all());
+        return redirect()->route('pratileiras.index');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Pratileira  $pratileira
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Pratileira $pratileira)
-    {
-        //
+    public function show($id){
+        $pratileira = Pratileira::find($id);
+        if(!$pratileira){
+            return redirect()->route('pratileiras.index');
+        }
+        return view('admin.pratileiras.show', compact('pratileira'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Pratileira  $pratileira
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Pratileira $pratileira)
-    {
-        //
+    public function destroy($id){
+        $pratileira = Pratileira::find($id);
+        $pratileira->delete();
+        return redirect()->route('pratileiras.index');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Pratileira  $pratileira
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Pratileira $pratileira)
-    {
-        //
+    public function edit($id){
+        $pratileira = Pratileira::find($id);
+        if(!$pratileira){
+            return redirect()->route('pratileiras.index');
+        }
+        return view('admin.pratileiras.edit', compact('pratileira'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Pratileira  $pratileira
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Pratileira $pratileira)
-    {
-        //
+    public function update(Request $request, $id){
+        $pratileira = Pratileira::find($id);
+        if(!$pratileira){
+            return redirect()->back();
+        }
+        $pratileira->update($request->all());
+        return redirect()
+            ->route('pratileiras.index')
+            ->with('message', 'Alterado com sucesso')
+        ;
     }
+
 }
